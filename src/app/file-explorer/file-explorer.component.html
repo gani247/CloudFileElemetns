@@ -6,16 +6,12 @@
     {{path || 'Files'}}
   </span>
   <span class="spacer"></span>
-  <mat-icon class="pointer" (click)="openNewFolderDialog()">
-    create_new_folder
-  </mat-icon>
-  <mat-icon class="pointer" (click)="openNewFolderDialog()">
-    attachment
-  </mat-icon>
+  <mat-icon class="pointer padd-lr-10" (click)="openNewFolderDialog()">create_new_folder</mat-icon>
+  <mat-icon class="pointer padd-lr-10" (click)="newFileDialog()">attachment</mat-icon>
 </mat-toolbar>
 
 <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
-
+  <span style="padding: 10px 15px;" *ngIf="fileElements?.length == 0">No folders and files available in this Folder</span>
   <div class="content" fxFlex fxLayout="row">
 
     <mat-grid-list cols="8" rowHeight="100px" fxFlex>
@@ -43,7 +39,7 @@
     </mat-grid-list>
     
   </div>
-  <span style="padding: 10px 15px;" *ngIf="fileElements?.length == 0">No folders and files available in this Folder</span>
+  
 </div>
 
 

@@ -29,9 +29,9 @@ router.get('/listAll/:folder?', (req, res) => {
            Bucket : bucketName
         };
     folder = req.params.folder;
-    console.log('folder', folder);
+    console.log('list-all-folder', folder);
     if(folder && folder.length !=0){
-        folder = folder.replace('_','/');
+        folder = folder.replace(/_/gi,'/');
         folder += folder.endsWith('/') ? "": "/";
         params.Prefix = folder;
     }
@@ -55,14 +55,14 @@ router.get('/listAll/:folder?', (req, res) => {
                 fileElement.name = key;
             }
             //folder = folder ? folder.replace('/','') : folder;
-            console.log('folder', folder);
-            console.log('fileElement', JSON.stringify(fileElement));
+            //console.log('folder', folder);
+            //console.log('fileElement', JSON.stringify(fileElement));
             if((!folder && fileElement.parent == bucketName) || fileElement.parent == folder){
                 data.push(fileElement);
                 
             }
         });
-        console.log('data', JSON.stringify(data));
+        // console.log('data', JSON.stringify(data));
         response.data = data;
         res.json(response);
     });
@@ -71,6 +71,7 @@ router.get('/listAll/:folder?', (req, res) => {
 router.get('/folder/:key', (req, res) => {
     // download a file
     var key = req.params.key;
+    key = key.replace(/_/gi,'/');
     console.log('get-folder-key', key);
     if(key){
         var params = {
@@ -87,13 +88,14 @@ router.get('/folder/:key', (req, res) => {
 
 router.put('/folder', (req, res) => {
     //create folder
-    var folder = req.body.folder;
-    var prefix = req.body.parent;
+    console.log(JSON.stringify(req.body));
+    var folder = req.body.id;
+    // var prefix = req.body.parent;
     var params = {
         Bucket : bucketName, 
         Key: folder
     };
-    if(prefix) params.Prefix = prefix;
+    //if(prefix) params.Prefix = prefix;
     s3Obj.createFolder(params).then((data)=>{
         response.data = data.Contents ? data.Contents : data;
         res.json(response);

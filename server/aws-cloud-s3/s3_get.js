@@ -14,10 +14,11 @@ s3 = new AWS.S3({apiVersion: '2006-03-01'});
 // Create params for S3.createBucket
 var readParams = {
   Bucket : 'mybucket1-247',
+  Key: 'tempfolder/intemp/'
 };
 
 // call S3 to create the bucket
-s3.listObjects(readParams, function(err, data) {
+s3.getObject(readParams, function(err, data) {
   if (err) {
     console.log("Error", err);
   } else {

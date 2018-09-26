@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
 export interface IFileService {
-  add(fileElement: FileElement);
+  add(fileElement: FileElement, callback?);
   delete(id: string);
   update(id: string, update: Partial<FileElement>);
   queryInFolder(folderId: string): Observable<FileElement[]>;
@@ -21,11 +21,18 @@ export class FileService implements IFileService {
 
   constructor(private _http: Http) {}
 
-  add(fileElement: FileElement) {
-    fileElement.id = v4();
+  add(fileElement: FileElement, callback?) {
+    fileElement.id = fileElement.parent+fileElement.name+ (fileElement.isFolder ? '/': '');
     console.log('fileElement', JSON.stringify(fileElement));
-    this.map.set(fileElement.id, this.clone(fileElement));
-    return fileElement;
+    // this.map.set(fileElement.id, this.clone(fileElement));
+    return this._http.put("/api/folder",JSON.parse(JSON.stringify(fileElement)))
+    .subscribe(result => {
+      console.log(JSON.stringify(result));
+      callback? callback() : '';
+      this.queryInFolder(fileElement.parent);
+      // return fileElement;//this.querySubject.asObservable();
+    });
+    //return fileElement;
   }
 
   delete(id: string) {
@@ -41,7 +48,7 @@ export class FileService implements IFileService {
   private querySubject: BehaviorSubject<FileElement[]>;
   queryInFolder(folderId: string) {
     const fileElements: FileElement[] = [];
-    folderId = folderId.replace('/','_')
+    folderId = folderId.replace(/\//gi, "_");
     return this._http.get("/api/listAll/"+folderId)
     .map(result => {
       var arr = result.json().data;
@@ -56,6 +63,7 @@ export class FileService implements IFileService {
   get(id: string) {
     let fileElement: FileElement;
     console.log('get-id', id);
+    id = id.replace(/\//gi, "_");
     this._http.get("/api/folder/"+id)
     .map(result => {
       var arr = result.json().data;

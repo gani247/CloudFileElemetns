@@ -24,8 +24,9 @@ export class AppComponent {
   }
 
   addFolder(folder: { name: string }) {
-    this.fileService.add({ isFolder: true, name: folder.name, parent: this.currentRoot ? this.currentRoot.id : 'root' });
-    this.updateFileElementQuery();
+    var element = { isFolder: true, name: folder.name, parent: this.currentRoot ? this.currentRoot.id : '' };
+    this.fileService.add(element);//, this.updateFileElementQuery());
+    //this.updateFileElementQuery();
   }
 
   updateFileElementQuery() {
@@ -53,7 +54,21 @@ export class AppComponent {
       this.canNavigateUp = false;
       this.updateFileElementQuery();
     } else {
-      this.currentRoot = this.fileService.get(this.currentRoot.parent);
+      var key = this.currentRoot.parent
+      this.currentRoot.id = key;
+      this.currentRoot.isFolder = key.endsWith('/');
+      var arr = key.split('/');
+      key = this.currentRoot.isFolder ? key.substr(0, key.length-1): key;
+      if(key.indexOf('/') != -1){ // has /
+        this.currentRoot.parent = key.substr(0,key.lastIndexOf('/')+1);
+        this.currentRoot.name = key.substr(key.lastIndexOf('/')+1, key.length);
+      }
+      else { // no /
+        this.currentRoot.name = key;
+        this.currentRoot.parent = undefined;
+      }
+      // this.currentRoot = this.fileService.get(this.currentRoot.parent);
+      
       this.updateFileElementQuery();
     }
     this.currentPath = this.popFromPath(this.currentPath);

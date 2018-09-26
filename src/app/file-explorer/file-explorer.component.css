@@ -24,6 +24,10 @@
   .pointer {
     cursor: pointer;
   }
+
+  .padd-lr-10{
+    padding: 0px 10px;
+  }
   
   .spacer {
     flex: 1 1 auto;
